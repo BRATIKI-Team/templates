@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated
 from fastapi import Depends, FastAPI, Body, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,6 +6,7 @@ from dotenv import load_dotenv
 
 from app.services.index_service import IndexService
 from app.services.query_service import QueryService
+from app.services.agents import RouletteAgent
 
 app = FastAPI()
 
@@ -28,3 +30,10 @@ async def query(
     query: Annotated[str, Query(...)],
     query_service: Annotated[QueryService, Depends(QueryService)]):
     return query_service.query(query)
+
+@app.get("/roulette")
+async def roulette(
+    number: Annotated[int, Query(...)],
+    roulette_agent: Annotated[RouletteAgent, Depends(RouletteAgent)]
+):
+    return await roulette_agent.run(number)
